@@ -1,2 +1,4 @@
 # k8s-clusters-check
-Check multiple kubernetes clusters for differences in  namespace and deployment resources
+
+A small tool to log possible differences between namespaces and deployments across multiple clusters.
+
