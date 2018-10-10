@@ -19,6 +19,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/golang/glog"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 	"os"
@@ -26,13 +27,14 @@ import (
 
 var (
 	CfgFile string = ""
+	Conf *Config
 )
 
 func init() {
 
 }
 
-func initConfig() {
+func initConfig() *Config {
 	viper.SetConfigType("json")
 
 	home, err := homedir.Dir()
@@ -43,18 +45,27 @@ func initConfig() {
 	viper.AddConfigPath(home + "/.config/")
 	viper.SetConfigName("k8scc.json")
 
-	if CfgFile != "" {
+	if len(CfgFile) > 0 {
 		viper.SetConfigFile(CfgFile)
 	}
 
 	viper.AutomaticEnv()
+	conf := &Config{}
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("Failed to read:", viper.ConfigFileUsed())
+		glog.Errorf("Failed to read config: %v", viper.ConfigFileUsed())
+		glog.Errorf("%v", err)
+		os.Exit(1)
 	}
+	if err := viper.Unmarshal(conf); err != nil {
+		glog.Errorf("Failed to unmarshal %v", conf)
+		glog.Errorf("%v", err)
+		os.Exit(1)
+	}
+	return conf
 }
 
 func Execute() error {
-	initConfig()
+	Conf = initConfig()
 	flag.Parse()
 	if err := RootCmd.Execute(); err != nil {
 		return err
