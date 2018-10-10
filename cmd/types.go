@@ -15,3 +15,19 @@ limitations under the License.
 */
 
 package cmd
+
+type Config struct {
+	Clusters ConfigClusters			`json:"clusters"`
+	NameSpaces ConfigNamespaces 	`json:"namespaces"`
+}
+
+type ConfigClusters struct {
+	Url string 						`json:"url"`	// Master api url
+	User string						`json:"user"`	// Typically a service account
+	Token string					`json:"token"`	// Token for service account
+}
+
+type ConfigNamespaces struct {
+
+}
+
