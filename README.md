@@ -1,4 +1,8 @@
 # k8s-clusters-check
 
-A small tool to log possible differences between namespaces and deployments across multiple clusters.
+**k8s-clusters-check** is a small tool that compares a list
+of deployments in namespaces on multiple kubernetes clusters.
+
+
+
 
