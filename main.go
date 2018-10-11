@@ -17,12 +17,14 @@ limitations under the License.
 package main
 
 import(
+	"flag"
 	"github.com/golang/glog"
 	"k8s-clusters-check/cmd"
 	"os"
 )
 
 func main() {
+	flag.Parse()
 	err := cmd.Execute()
 	if err != nil {
 		glog.Error(err)
