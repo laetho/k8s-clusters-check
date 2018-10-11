@@ -17,7 +17,7 @@ limitations under the License.
 package cmd
 
 type Config struct {
-	Clusters []ConfigCluster			`json:"clusters"`
+	Clusters []ConfigCluster		`json:"clusters"`
 	NameSpaces []ConfigNamespace 	`json:"namespaces"`
 }
 
@@ -29,10 +29,7 @@ type ConfigCluster struct {
 
 type ConfigNamespace struct {
 	Namespace string				`json:"namespace"`
-	Deployments []ConfigDeployment	`json:"deployments"`
+	Deployments []string			`json:"deployments"`
 }
 
-type ConfigDeployment struct {
-	Deployment string
-}
 
