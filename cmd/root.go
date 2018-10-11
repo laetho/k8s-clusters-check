@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"github.com/golang/glog"
 	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -30,8 +32,28 @@ var (
 	Conf *Config
 )
 
-func init() {
+var RootCmd = &cobra.Command{
+	Use:   "k8s-clusters-check",
+	Short: "k8s-clusters-check",
+	Long: `Runs against a list of k8s clusters and monitors namespaces and deployment resources differences.`,
+	//Run: func(cmd *cobra.Command, args []string) {
+	// Do Stuff Here
+	//},
+}
 
+var InitConfigCmd = &cobra.Command{
+	Use: "init-config",
+	Short: "Initialize config",
+	Long: "Initialize an empty config structure",
+	Run: func (cmd *cobra.Command, args []string) {
+		fmt.Println("initconfig")
+	},
+}
+
+
+func init() {
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	RootCmd.AddCommand(InitConfigCmd)
 }
 
 func initConfig() *Config {
@@ -42,8 +64,8 @@ func initConfig() *Config {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	viper.AddConfigPath(home + "/.config/")
-	viper.SetConfigName("k8scc.json")
+	viper.AddConfigPath(home + "/.config")
+	viper.SetConfigName("k8scc")
 
 	if len(CfgFile) > 0 {
 		viper.SetConfigFile(CfgFile)
@@ -52,21 +74,27 @@ func initConfig() *Config {
 	viper.AutomaticEnv()
 	conf := &Config{}
 	if err := viper.ReadInConfig(); err != nil {
-		glog.Errorf("Failed to read config: %v", viper.ConfigFileUsed())
 		glog.Errorf("%v", err)
 		os.Exit(1)
 	}
+
 	if err := viper.Unmarshal(conf); err != nil {
 		glog.Errorf("Failed to unmarshal %v", conf)
 		glog.Errorf("%v", err)
 		os.Exit(1)
 	}
+
 	return conf
 }
 
 func Execute() error {
 	Conf = initConfig()
-	flag.Parse()
+	/*
+	viper.WatchConfig()
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		Conf =
+	})
+	*/
 	if err := RootCmd.Execute(); err != nil {
 		return err
 	}
