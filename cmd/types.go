@@ -23,7 +23,6 @@ type Config struct {
 
 type ConfigCluster struct {
 	Url string 						`json:"url"`	// Master api url
-	User string						`json:"user"`	// Typically a service account
 	Token string					`json:"token"`	// Token for service account
 }
 
@@ -32,4 +31,11 @@ type ConfigNamespace struct {
 	Deployments []string			`json:"deployments"`
 }
 
+
+/*
+The PodMap is a flattened map of namespace.deployment, image
+Use reflect deepequal?
+ */
+type PodMaps []PodMap
+type PodMap map[string]string
 
