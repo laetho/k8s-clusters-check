@@ -22,8 +22,10 @@ import (
 	"github.com/golang/glog"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 )
 
@@ -31,6 +33,11 @@ var (
 	CfgFile string = ""
 	Conf *Config
 )
+
+var header = &doc.GenManHeader{
+	Title: "k8s-clusters-check",
+	Section: "3",
+}
 
 var RootCmd = &cobra.Command{
 	Use:   "k8s-clusters-check",
@@ -50,10 +57,25 @@ var InitConfigCmd = &cobra.Command{
 	},
 }
 
+var ManPageCmd = &cobra.Command{
+	Hidden: true,
+	Use: "manpage",
+	Short: "Generate manpage",
+	Long: "Generates a man page",
+	Run: func (cmd *cobra.Command, args []string) {
+		err := doc.GenManTree(RootCmd, header, "/tmp")
+		if err != nil {
+			log.Fatal(err)
+		}
+	},
+}
 
 func init() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	RootCmd.AddCommand(ManPageCmd)
 	RootCmd.AddCommand(InitConfigCmd)
+
+
 }
 
 func initConfig() *Config {
