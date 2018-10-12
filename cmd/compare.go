@@ -18,13 +18,13 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
-	"k8s-clusters-check/pkg/client"
+	"k8s-clusters-check/pkg/k8sclient"
+	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
+	"reflect"
 )
 
 var compareCmd = &cobra.Command{
@@ -45,29 +45,57 @@ func cmdCompare() {
 	glog.Infof("Number of clusters in config: %v", len(Conf.Clusters))
 	glog.Infof("Number of namespaces in config: %v", len(Conf.NameSpaces))
 
-	// @todo replace this with actual
-	config := rest.Config{
-		Host: "https://master.ocp.norsk-tipping.no:8443",
-		UserAgent: "k8s-clusters-check",
-		BearerToken: "ZAGqtBd0LIzgpBvqWwvUkrjxhJ9oEsp-OUYg-7g68hk",
+	maps := PodMaps{}
+
+	// Get maps from all clusters
+	for _,c := range Conf.Clusters {
+		config := rest.Config{
+			Host : c.Url,
+			BearerToken: c.Token,
+		}
+		client := k8sclient.GetCoreRESTConfigClient(&config)
+		maps = append(maps, podMapFromCluster(client))
 	}
-
-	for k,v := range Conf.Clusters {
-		fmt.Println(k,v)
+	fmt.Println(maps)
+	if len(maps) == 2 {
+		if reflect.DeepEqual(maps[0], maps[1]) {
+			glog.Info("The clusters are equal")
+		} else {
+			glog.Info("The clusters differ")
+		}
 	}
-
-
-
 }
 
-func podMapFromCluster(c *corev1client.CoreV1Client, config *rest.Config) PodMap {
-	client := client.GetCoreRESTConfigClient(config)
-	lst, err := client.Pods("vapidev").List(metav1.ListOptions{})
-	if err != nil {
-		glog.Errorf("%v",err)
-		os.Exit(1)
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
 	}
-	fmt.Println(lst)
+	return false
+}
 
-	return PodMap{}
+func podMapFromCluster(c *corev1client.CoreV1Client) PodMap {
+
+	podmap := PodMap{}
+
+	for _, ns := range Conf.NameSpaces {
+		fmt.Println(ns)
+		lst, err := c.Pods(ns.Namespace).List(metav1.ListOptions{})
+		if err != nil {
+			glog.Warningf("Unable to fetch pods for cluster: %v", err)
+			return podmap
+		}
+
+		for _,pod := range lst.Items {
+			if !StringInSlice(pod.Labels["deploymentconfig"],ns.Deployments) {
+				continue
+			}
+			// build podmap, must handle multiple containers in pod
+			podmap[ns.Namespace+"."+pod.Labels["deploymentconfig"]] = "stuff"
+
+		}
+	}
+
+	return podmap
 }
