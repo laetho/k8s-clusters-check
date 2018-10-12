@@ -17,14 +17,14 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"k8s-clusters-check/pkg/k8sclient"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
+	"strings"
 )
 
 var compareCmd = &cobra.Command{
@@ -42,8 +42,8 @@ func init() {
 
 
 func cmdCompare() {
-	glog.Infof("Number of clusters in config: %v", len(Conf.Clusters))
-	glog.Infof("Number of namespaces in config: %v", len(Conf.NameSpaces))
+	glog.V(2).Infof("Number of clusters in config: %v", len(Conf.Clusters))
+	glog.V(2).Infof("Number of namespaces in config: %v", len(Conf.NameSpaces))
 
 	maps := PodMaps{}
 
@@ -54,14 +54,15 @@ func cmdCompare() {
 			BearerToken: c.Token,
 		}
 		client := k8sclient.GetCoreRESTConfigClient(&config)
+		glog.V(2).Info(config.Host)
 		maps = append(maps, podMapFromCluster(client))
 	}
-	fmt.Println(maps)
+	glog.V(3).Infof("PodMaps: %v",maps)
 	if len(maps) == 2 {
 		if reflect.DeepEqual(maps[0], maps[1]) {
-			glog.Info("The clusters are equal")
+			glog.Info("OK, The clusters are equal")
 		} else {
-			glog.Info("The clusters differ")
+			glog.Error("ERROR, The clusters differ")
 		}
 	}
 }
@@ -80,7 +81,6 @@ func podMapFromCluster(c *corev1client.CoreV1Client) PodMap {
 	podmap := PodMap{}
 
 	for _, ns := range Conf.NameSpaces {
-		fmt.Println(ns)
 		lst, err := c.Pods(ns.Namespace).List(metav1.ListOptions{})
 		if err != nil {
 			glog.Warningf("Unable to fetch pods for cluster: %v", err)
@@ -92,8 +92,13 @@ func podMapFromCluster(c *corev1client.CoreV1Client) PodMap {
 				continue
 			}
 			// build podmap, must handle multiple containers in pod
-			podmap[ns.Namespace+"."+pod.Labels["deploymentconfig"]] = "stuff"
-
+			glog.V(2).Infof("Containers in pod, %v : %v", pod.Name ,len(pod.Spec.Containers))
+			for _, cnt := range pod.Spec.Containers {
+				glog.V(3).Infof("Name: %v",cnt.Name)
+				glog.V(3).Infof("Image: %v",cnt.Image)
+				imageref := strings.SplitAfterN(cnt.Image,"/", 2)
+				podmap[ns.Namespace+"."+pod.Labels["deploymentconfig"]+"."+cnt.Name] = imageref[1]
+			}
 		}
 	}
 
