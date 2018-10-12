@@ -63,9 +63,9 @@ var ManPageCmd = &cobra.Command{
 	Short: "Generate manpage",
 	Long: "Generates a man page",
 	Run: func (cmd *cobra.Command, args []string) {
-		err := doc.GenManTree(RootCmd, header, "/tmp")
+		err := doc.GenManTree(RootCmd, header, "./man")
 		if err != nil {
-			log.Fatal(err)
+			glog.Errorf("%v", err)
 		}
 	},
 }
