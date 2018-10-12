@@ -25,7 +25,6 @@ import (
 	"github.com/spf13/cobra/doc"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 )
 
@@ -70,9 +69,20 @@ var ManPageCmd = &cobra.Command{
 	},
 }
 
+var CompletionsCmd = &cobra.Command{
+	Hidden: true,
+	Use: "completions",
+	Short: "Generates bash completions",
+	Long: "Generates bash completions for the k8s-clusters-check command.",
+	Run: func (cmd *cobra.Command, args []string) {
+		RootCmd.GenBashCompletion(os.Stdout)
+	},
+}
+
 func init() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	RootCmd.AddCommand(ManPageCmd)
+	RootCmd.AddCommand(CompletionsCmd)
 	RootCmd.AddCommand(InitConfigCmd)
 
 
