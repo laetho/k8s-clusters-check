@@ -47,15 +47,6 @@ var RootCmd = &cobra.Command{
 	//},
 }
 
-var InitConfigCmd = &cobra.Command{
-	Use: "init-config",
-	Short: "Initialize config",
-	Long: "Initialize an empty config structure",
-	Run: func (cmd *cobra.Command, args []string) {
-		fmt.Println("initconfig")
-	},
-}
-
 var ManPageCmd = &cobra.Command{
 	Hidden: true,
 	Use: "manpage",
@@ -83,9 +74,6 @@ func init() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	RootCmd.AddCommand(ManPageCmd)
 	RootCmd.AddCommand(CompletionsCmd)
-	RootCmd.AddCommand(InitConfigCmd)
-
-
 }
 
 func initConfig() *Config {
@@ -120,7 +108,6 @@ func initConfig() *Config {
 }
 
 func Execute() error {
-	Conf = initConfig()
 	/*
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
