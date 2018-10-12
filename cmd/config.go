@@ -28,9 +28,12 @@ var InitConfigCmd = &cobra.Command{
 	Short: "Initialize config",
 	Long: "Initialize an empty config structure",
 	Run: func (cmd *cobra.Command, args []string) {
-		if ba, err := json.Marshal(Config{}); err != nil {
+		conf := Config{}
+		ba, err := json.Marshal(conf)
+		if err != nil {
 			glog.Errorf("%v", err)
 		}
+		fmt.Println(string(ba))
 	},
 }
 
