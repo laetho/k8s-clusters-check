@@ -108,12 +108,6 @@ func initConfig() *Config {
 }
 
 func Execute() error {
-	/*
-	viper.WatchConfig()
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		Conf =
-	})
-	*/
 	if err := RootCmd.Execute(); err != nil {
 		return err
 	}
