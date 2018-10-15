@@ -53,8 +53,23 @@ var GenerateCompletionsCmd = &cobra.Command{
 	},
 }
 
+var GenerateMarkdownCmd = &cobra.Command{
+	Hidden: true,
+	Use: "markdown",
+	Short: "Generate markdown documentation",
+	Long: "Generates markdown documentation for the command options.",
+	Run: func (cmd *cobra.Command, args []string) {
+		err := doc.GenMarkdownTree(RootCmd, "./doc")
+		if err != nil {
+			glog.Errorf("%v",err)
+			os.Exit(1)
+		}
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(GenerateCmd)
 	GenerateCmd.AddCommand(GenerateCompletionsCmd)
 	GenerateCmd.AddCommand(GenerateManPageCmd)
+	GenerateCmd.AddCommand(GenerateMarkdownCmd)
 }
