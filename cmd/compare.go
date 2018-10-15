@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"k8s-clusters-check/pkg/k8sclient"
@@ -62,8 +63,10 @@ func cmdCompare() {
 	if len(maps) == 2 {
 		if reflect.DeepEqual(maps[0], maps[1]) {
 			glog.Info("OK, The clusters are equal")
+			fmt.Println("OK, The clusters are equal")
 		} else {
 			glog.Error("ERROR, The clusters differ")
+			fmt.Println("ERROR, The clusters differ")
 		}
 	}
 }
