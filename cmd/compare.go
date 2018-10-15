@@ -33,7 +33,6 @@ var compareCmd = &cobra.Command{
 	Short: "Compare deployments on clusters",
 	Long:  `Compare deployments on clusters`,
 	Run: func(cmd *cobra.Command, args []string) {
-		Conf = initConfig()
 		cmdCompare()
 	},
 }

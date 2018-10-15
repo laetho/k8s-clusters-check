@@ -50,10 +50,12 @@ var RootCmd = &cobra.Command{
 
 
 func init() {
+	cobra.OnInitialize(initConfig)
+	RootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.config/k8scc.json)")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 }
 
-func initConfig() *Config {
+func initConfig() {
 	viper.SetConfigType("json")
 
 	home, err := homedir.Dir()
@@ -81,7 +83,7 @@ func initConfig() *Config {
 		os.Exit(1)
 	}
 
-	return conf
+	Conf = conf
 }
 
 func Execute() error {

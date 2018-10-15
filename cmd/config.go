@@ -49,7 +49,6 @@ var ConfigListCmd = &cobra.Command{
 	Short: "List current configuration",
 	Long: "Manipulates the ~/.config/k8scc.json configuration file.",
 	Run: func (cmd *cobra.Command, args []string) {
-		Conf = initConfig()
 		configList()
 	},
 }
