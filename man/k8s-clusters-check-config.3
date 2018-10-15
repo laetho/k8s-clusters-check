@@ -5,27 +5,29 @@
 
 .SH NAME
 .PP
-k8s\-clusters\-check \- k8s\-clusters\-check
+k8s\-clusters\-check\-config \- Config manipulates the current configuration
 
 
 .SH SYNOPSIS
 .PP
-\fBk8s\-clusters\-check [flags]\fP
+\fBk8s\-clusters\-check config [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Runs against a list of k8s clusters and monitors namespaces and deployment resources differences.
+Manipulates the \~/.config/k8scc.json configuration file.
 
 
 .SH OPTIONS
 .PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+    help for config
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
 \fB\-\-alsologtostderr\fP[=false]
     log to standard error as well as files
-
-.PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
-    help for k8s\-clusters\-check
 
 .PP
 \fB\-\-log\_backtrace\_at\fP=:0
@@ -54,7 +56,7 @@ Runs against a list of k8s clusters and monitors namespaces and deployment resou
 
 .SH SEE ALSO
 .PP
-\fBk8s\-clusters\-check\-compare(3)\fP, \fBk8s\-clusters\-check\-config(3)\fP
+\fBk8s\-clusters\-check(3)\fP, \fBk8s\-clusters\-check\-config\-init\-config(3)\fP, \fBk8s\-clusters\-check\-config\-list(3)\fP
 
 
 .SH HISTORY
