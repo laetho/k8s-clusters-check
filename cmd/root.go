@@ -47,33 +47,10 @@ var RootCmd = &cobra.Command{
 	//},
 }
 
-var ManPageCmd = &cobra.Command{
-	Hidden: true,
-	Use: "manpage",
-	Short: "Generate manpage",
-	Long: "Generates a man page",
-	Run: func (cmd *cobra.Command, args []string) {
-		err := doc.GenManTree(RootCmd, header, "./man")
-		if err != nil {
-			glog.Errorf("%v", err)
-		}
-	},
-}
 
-var CompletionsCmd = &cobra.Command{
-	Hidden: true,
-	Use: "completions",
-	Short: "Generates bash completions",
-	Long: "Generates bash completions for the k8s-clusters-check command.",
-	Run: func (cmd *cobra.Command, args []string) {
-		RootCmd.GenBashCompletion(os.Stdout)
-	},
-}
 
 func init() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	RootCmd.AddCommand(ManPageCmd)
-	RootCmd.AddCommand(CompletionsCmd)
 }
 
 func initConfig() *Config {
