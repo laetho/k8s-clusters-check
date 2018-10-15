@@ -23,7 +23,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var InitConfigCmd = &cobra.Command{
+
+var ConfigCmd = &cobra.Command{
+	Use: "config",
+	Short: "Config manipulates the current configuration",
+	Long: "Manipulates the ~/.config/k8scc.json configuration file.",
+}
+
+var ConfigInitCmd = &cobra.Command{
 	Use: "init-config",
 	Short: "Initialize config",
 	Long: "Initialize an empty config structure",
@@ -37,18 +44,36 @@ var InitConfigCmd = &cobra.Command{
 	},
 }
 
-var ConfigCmd = &cobra.Command{
-	Use: "config",
-	Short: "Config manipulates the current configuration",
+var ConfigListCmd = &cobra.Command{
+	Use: "list",
+	Short: "List current configuration",
 	Long: "Manipulates the ~/.config/k8scc.json configuration file.",
 	Run: func (cmd *cobra.Command, args []string) {
-		fmt.Println("config")
+		Conf = initConfig()
+		configList()
 	},
 }
 
-
-
 func init() {
-	RootCmd.AddCommand(InitConfigCmd)
 	RootCmd.AddCommand(ConfigCmd)
+	ConfigCmd.AddCommand(ConfigInitCmd)
+	ConfigCmd.AddCommand(ConfigListCmd)
+
+}
+
+func configList() {
+	fmt.Printf("Tracking %v namespace(s):\n",len(Conf.NameSpaces))
+	for _,v := range Conf.NameSpaces {
+		fmt.Printf(" - %v:\n", v.Namespace)
+	}
+	for _,v := range Conf.NameSpaces {
+		fmt.Printf("Deployments in namespace %v:\n", v.Namespace)
+		for k,_ := range v.Deployments {
+			fmt.Printf(" - %v\n", v.Deployments[k])
+		}
+	}
+	fmt.Printf("Across %v kubernetes cluster API's:\n", len(Conf.Clusters))
+	for _,c := range Conf.Clusters {
+		fmt.Printf(" - %v\n", c.Url)
+	}
 }
